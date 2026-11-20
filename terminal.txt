@@ -1,0 +1,801 @@
+(.venv) PS C:\Users\Laptop\Desktop\a3_project> python load_data.py
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+README.md: 100%|██████████████████████████████████████████████████████████████████████████████| 6.34k/6.34k [00:00<00:00, 5.16MB/s]
+C:\Users\Laptop\Desktop\a3_project\.venv\Lib\site-packages\huggingface_hub\file_download.py:149: UserWarning: `huggingface_hub` cache-system uses symlinks by default to efficiently store duplicated files but your machine does not support them in C:\Users\Laptop\.cache\huggingface\hub\datasets--Yale-LILY--aeslc. Caching files will still work but in a degraded version that might require more space on your disk. This warning can be disabled by setting the `HF_HUB_DISABLE_SYMLINKS_WARNING` environment variable. For more details, see https://huggingface.co/docs/huggingface_hub/how-to-cache#limitations.
+To support symlinks on Windows, you either need to activate Developer Mode or to run Python as an administrator. In order to activate developer mode, see this article: https://docs.microsoft.com/en-us/windows/apps/get-started/enable-your-device-for-development
+  warnings.warn(message)
+C:\Users\Laptop\Desktop\a3_project\.venv\Lib\site-packages\huggingface_hub\file_download.py:149: UserWarning: `huggingface_hub` cache-system uses symlinks by default to efficiently store duplicated files but your machine does not support them in C:\Users\Laptop\.cache\huggingface\hub. Caching files will still work but in a degraded version that might require more space on your disk. This warning can be disabled by setting the `HF_HUB_DISABLE_SYMLINKS_WARNING` environment variable. For more details, see https://huggingface.co/docs/huggingface_hub/how-to-cache#limitations.
+To support symlinks on Windows, you either need to activate Developer Mode or to run Python as an administrator. In order to activate developer mode, see this article: https://docs.microsoft.com/en-us/windows/apps/get-started/enable-your-device-for-development
+  warnings.warn(message)
+data/train-00000-of-00001.parquet: downloading bytes: █████████████████████████████████████████████████████████| 6.18MB,  532kB/s  
+data/train-00000-of-00001.parquet: reconstructing file: 100%|█████████████████████████████████████████| 6.26MB / 6.26MB,  553kB/s  
+data/validation-00000-of-00001.parquet: downloading bytes: ████████████████████████████████████████████████████|  888kB, 80.2kB/s  
+data/validation-00000-of-00001.parquet: reconstructing file: 100%|████████████████████████████████████|  896kB /  896kB, 82.6kB/s  
+data/test-00000-of-00001.parquet: downloading bytes: ██████████████████████████████████████████████████████████|  787kB, 71.7kB/s  
+data/test-00000-of-00001.parquet: reconstructing file: 100%|██████████████████████████████████████████|  794kB /  794kB, 73.5kB/s  
+Generating train split: 100%|█████████████████████████████████████████████████████| 14436/14436 [00:00<00:00, 130105.40 examples/s]
+Generating validation split: 100%|███████████████████████████████████████████████████| 1960/1960 [00:00<00:00, 29392.46 examples/s]
+Generating test split: 100%|█████████████████████████████████████████████████████████| 1906/1906 [00:00<00:00, 38180.12 examples/s]
+DatasetDict({
+    train: Dataset({
+        features: ['email_body', 'subject_line'],
+        num_rows: 14436
+    })
+    validation: Dataset({
+        features: ['email_body', 'subject_line'],
+        num_rows: 1960
+    })
+    test: Dataset({
+        features: ['email_body', 'subject_line'],
+        num_rows: 1906
+    })
+})
+(.venv) PS C:\Users\Laptop\Desktop\a3_project> python src/06_build_corpus.py prepare --n 300
+C:\Users\Laptop\Desktop\a3_project\.venv\Scripts\python.exe: can't open file 'C:\\Users\\Laptop\\Desktop\\a3_project\\src\\06_build_corpus.py': [Errno 2] No such file or directory
+(.venv) PS C:\Users\Laptop\Desktop\a3_project> python src/06_build_corpus.py prepare --n 300
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+300 human emails saved to C:\Users\Laptop\Desktop\a3_project\data\raw\human_sampled.csv. Open it and skim for leftover names/personal details.
+(.venv) PS C:\Users\Laptop\Desktop\a3_project> python -c "
+>> import pandas as pd, re
+>> df = pd.read_csv('data/raw/human_sampled.csv')
+>> df = df[~df['text_id'].isin(['h0051', 'h0163', 'h0216', 'h0227'])].copy()
+>> df['text'] = df['text'].str.replace(r'\b\d{3}[\s.-]\d{4}\b', '[PHONE]', regex=True)
+>> df['text'] = df['text'].str.replace(r'8823 DEER MEADOW DR\s+HOUSTON, TX 77071', '[ADDRESS]', regex=True)
+>> df['subject'] = df['subject'].str.strip()
+>> df.to_csv('data/raw/human_sampled.csv', index=False)
+>> print('Remaining clean rows:', len(df))
+>> "
+Remaining clean rows: 296
+
+
+
+------------------------------------------------------------------------------------------------
+
+(.venv) PS C:\Users\Laptop\Desktop\a3_project> python src/06_build_corpus.py generate --provider groq --model openai/gpt-oss-120b --name gpt_oss_120b --start 0 --end 150
+1 h0000
+2 h0001
+3 h0002
+4 h0003
+5 h0004
+6 h0005
+7 h0006
+8 h0007
+9 h0008
+10 h0009
+11 h0010
+12 h0011
+13 h0012
+14 h0013
+15 h0014
+16 h0015
+17 h0016
+18 h0017
+19 h0018
+20 h0019
+21 h0020
+22 h0021
+23 h0022
+24 h0023
+25 h0024
+26 h0025
+27 h0026
+28 h0027
+29 h0028
+30 h0029
+31 h0030
+32 h0031
+33 h0032
+34 h0033
+35 h0034
+36 h0035
+37 h0036
+38 h0037
+39 h0038
+40 h0039
+41 h0040
+42 h0041
+43 h0042
+44 h0043
+45 h0044
+46 h0045
+47 h0046
+48 h0047
+49 h0048
+50 h0049
+51 h0050
+52 h0052
+53 h0053
+54 h0054
+55 h0055
+56 h0056
+57 h0057
+58 h0058
+59 h0059
+60 h0060
+61 h0061
+62 h0062
+63 h0063
+64 h0064
+65 h0065
+66 h0066
+67 h0067
+68 h0068
+69 h0069
+70 h0070
+71 h0071
+72 h0072
+73 h0073
+74 h0074
+75 h0075
+76 h0076
+77 h0077
+78 h0078
+79 h0079
+80 h0080
+81 h0081
+82 h0082
+83 h0083
+84 h0084
+85 h0085
+86 h0086
+87 h0087
+88 h0088
+89 h0089
+90 h0090
+91 h0091
+92 h0092
+93 h0093
+94 h0094
+95 h0095
+96 h0096
+97 h0097
+98 h0098
+99 h0099
+100 h0100
+101 h0101
+102 h0102
+103 h0103
+104 h0104
+105 h0105
+106 h0106
+107 h0107
+108 h0108
+109 h0109
+110 h0110
+111 h0111
+112 h0112
+113 h0113
+114 h0114
+115 h0115
+116 h0116
+117 h0117
+118 h0118
+119 h0119
+120 h0120
+121 h0121
+122 h0122
+123 h0123
+124 h0124
+125 h0125
+126 h0126
+127 h0127
+128 h0128
+129 h0129
+130 h0130
+131 h0131
+132 h0132
+133 h0133
+134 h0134
+135 h0135
+136 h0136
+137 h0137
+138 h0138
+139 h0139
+140 h0140
+141 h0141
+142 h0142
+143 h0143
+144 h0144
+145 h0145
+146 h0146
+147 h0147
+148 h0148
+149 h0149
+150 h0150
+saved C:\Users\Laptop\Desktop\a3_project\data\raw\ai_gpt_oss_120b.csv
+(.venv) PS C:\Users\Laptop\Desktop\a3_project> python src/06_build_corpus.py generate --provider groq --model qwen/qwen3.8-27b --name qwen3_27b --start 150 --end 296
+1 h0151
+2 h0152
+3 h0153
+4 h0154
+5 h0155
+6 h0156
+7 h0157
+8 h0158
+9 h0159
+10 h0160
+11 h0161
+12 h0162
+13 h0164
+14 h0165
+15 h0166
+16 h0167
+17 h0168
+18 h0169
+19 h0170
+20 h0171
+21 h0172
+22 h0173
+23 h0174
+24 h0175
+25 h0176
+26 h0177
+27 h0178
+28 h0179
+29 h0180
+30 h0181
+31 h0182
+32 h0183
+33 h0184
+34 h0185
+35 h0186
+36 h0187
+37 h0188
+38 h0189
+39 h0190
+40 h0191
+41 h0192
+42 h0193
+43 h0194
+44 h0195
+45 h0196
+46 h0197
+47 h0198
+48 h0199
+49 h0200
+50 h0201
+51 h0202
+52 h0203
+53 h0204
+54 h0205
+55 h0206
+56 h0207
+57 h0208
+58 h0209
+59 h0210
+60 h0211
+61 h0212
+62 h0213
+63 h0214
+64 h0215
+65 h0217
+66 h0218
+67 h0219
+68 h0220
+69 h0221
+70 h0222
+71 h0223
+72 h0224
+73 h0225
+74 h0226
+75 h0228
+76 h0229
+77 h0230
+78 h0231
+79 h0232
+80 h0233
+81 h0234
+82 h0235
+83 h0236
+84 h0237
+85 h0238
+86 h0239
+87 h0240
+88 h0241
+89 h0242
+90 h0243
+91 h0244
+92 h0245
+93 h0246
+94 h0247
+95 h0248
+96 h0249
+97 h0250
+98 h0251
+99 h0252
+100 h0253
+101 h0254
+102 h0255
+103 h0256
+104 h0257
+105 h0258
+106 h0259
+107 h0260
+108 h0261
+109 h0262
+110 h0263
+111 h0264
+112 h0265
+113 h0266
+114 h0267
+115 h0268
+116 h0269
+117 h0270
+118 h0271
+119 h0272
+120 h0273
+121 h0274
+122 h0275
+123 h0276
+124 h0277
+125 h0278
+126 h0279
+127 h0280
+128 h0281
+129 h0282
+130 h0283
+131 h0284
+132 h0285
+133 h0286
+134 h0287
+135 h0288
+136 h0289
+137 h0290
+138 h0291
+139 h0292
+140 h0293
+141 h0294
+142 h0295
+143 h0296
+144 h0297
+145 h0298
+146 h0299
+saved C:\Users\Laptop\Desktop\a3_project\data\raw\ai_qwen3_27b.csv
+(.venv) PS C:\Users\Laptop\Desktop\a3_project> 
+
+
+//
+ These two are completely fine—you do not need a third LLM.
+
+Why two works: Your two models (openai/gpt-oss-120b and qwen/qwen3.8-27b) are from different model families
+ (OpenAI vs. Alibaba Qwen), and each has ~150 emails. In src/04_robustness.py,
+  the unseen-generator test trains on one generator and evaluates on the other,
+   which works cleanly with two distinct generators.
+
+Why a third isn't worth the extra time:
+ Splitting 296 emails three ways gives ~98 rows per generator instead of ~148,
+  and none of the other models on your Groq key (allam-2-7b, gpt-oss-20b, audio/guard models)
+   add meaningful diversity beyond what you already have. With your deadline approaching,
+    moving straight to assembling own_corpus.csv and building external_corpus.csv is the highest-value step.
+
+ //
+
+ (.venv) PS C:\Users\Laptop\Desktop\a3_project> python src/06_build_corpus.py assemble
+label  generator   
+0                      296
+1      gpt_oss_120b    150
+       qwen3_27b       146
+dtype: int64
+(.venv) PS C:\Users\Laptop\Desktop\a3_project> 
+
+
+===================== =========================
+
+(.venv) PS C:\Users\Laptop\Desktop\a3_project> python -c "
+>> from datasets import load_dataset
+>> import pandas as pd, re
+>> 
+>> ds = load_dataset('json', data_files='https://huggingface.co/datasets/Hello-SimpleAI/HC3/resolve/main/all.jsonl', split='train')
+>> rows = []
+>> for i, r in enumerate(ds):
+>>     if r['human_answers'] and r['chatgpt_answers']:
+>>         h = re.sub(r'\s+', ' ', r['human_answers'][0]).strip()
+>>         a = re.sub(r'\s+', ' ', r['chatgpt_answers'][0]).strip()
+>>         if 40 <= len(h.split()) <= 200 and 40 <= len(a.split()) <= 200:
+>>             rows.append({'text_id': f'hc3_h{i:04d}', 'text': h, 'label': 0, 'generator': '', 'domain': 'hc3_qa'})
+>>             rows.append({'text_id': f'hc3_a{i:04d}', 'text': a, 'label': 1, 'generator': 'chatgpt', 'domain': 'hc3_qa'})
+>>     if len(rows) >= 600:
+>>         break
+>> 
+>> df = pd.DataFrame(rows)
+>> df.to_csv('data/raw/external_corpus.csv', index=False)
+>> print('Saved external_corpus.csv:', df['label'].value_counts().to_dict())
+>> "
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+C:\Users\Laptop\Desktop\a3_project\.venv\Lib\site-packages\huggingface_hub\file_download.py:149: UserWarning: `huggingface_hub` cache-system uses symlinks by default to efficiently store duplicated files but your machine does not support them in C:\Users\Laptop\.cache\huggingface\hub. Caching files will still work but in a degraded version that might require more space on your disk. This warning can be disabled by setting the `HF_HUB_DISABLE_SYMLINKS_WARNING` environment variable. For more details, see https://huggingface.co/docs/huggingface_hub/how-to-cache#limitations.
+To support symlinks on Windows, you either need to activate Developer Mode or to run Python as an administrator. In order to activate developer mode, see this article: https://docs.microsoft.com/en-us/windows/apps/get-started/enable-your-device-for-development
+  warnings.warn(message)
+all.jsonl: downloading bytes: █████████████████████████████████████████████████████████████████████████████████| 40.2MB, 1.83MB/s  
+all.jsonl: reconstructing file: 100%|█████████████████████████████████████████████████████████████████| 73.7MB / 73.7MB, 5.56MB/s  
+C:\Users\Laptop\Desktop\a3_project\.venv\Lib\site-packages\huggingface_hub\file_download.py:149: UserWarning: `huggingface_hub` cache-system uses symlinks by default to efficiently store duplicated files but your machine does not support them in C:\Users\Laptop\.cache\huggingface\hub\datasets--Hello-SimpleAI--HC3. Caching files will still work but in a degraded version that might require more space on your disk. This warning can be disabled by setting the `HF_HUB_DISABLE_SYMLINKS_WARNING` environment variable. For more details, see https://huggingface.co/docs/huggingface_hub/how-to-cache#limitations.
+To support symlinks on Windows, you either need to activate Developer Mode or to run Python as an administrator. In order to activate developer mode, see this article: https://docs.microsoft.com/en-us/windows/apps/get-started/enable-your-device-for-development
+  warnings.warn(message)
+Generating train split: 24322 examples [00:00, 29744.76 examples/s]
+Saved external_corpus.csv: {0: 300, 1: 300}
+(.venv) PS C:\Users\Laptop\Desktop\a3_project> 
+
+
+
+
+=================================================================================
+
+
+(.venv) PS C:\Users\Laptop\Desktop\a3_project> python src/01_clean_data.py
+           file  rows_in  rows_out  share_AI
+     own_corpus      592       592       0.5
+external_corpus      600       600       0.5
+(.venv) PS C:\Users\Laptop\Desktop\a3_project> python src/02_base_model.py
+         accuracy        f1      roc_auc     
+             mean  std mean  std    mean  std
+dataset                                      
+external      0.5  0.0  0.0  0.0   0.473  0.0
+own_test      1.0  0.0  1.0  0.0   1.000  0.0
+(.venv) PS C:\Users\Laptop\Desktop\a3_project> python src/03_extended_model.py
+ dataset    model  f1_ci_lo  f1_ci_hi  auc_ci_lo  auc_ci_hi  mcnemar_p_base_vs_ext  base_only_correct  ext_only_correct
+own_test     base     1.000     1.000      1.000      1.000                  0.134                  4                 0
+own_test extended     0.929     0.992      0.975      1.000                  0.134                  4                 0
+external     base     0.000     0.000      0.427      0.520                  0.000                 59                 1
+external extended     0.000     0.017      0.198      0.274                  0.000                 59                 1
+(.venv) PS C:\Users\Laptop\Desktop\a3_project> python src/04_robustness.py
+   model                          test  accuracy  precision  recall    f1  roc_auc  tpr_at_5fpr
+    base                  perturb:none     1.000      1.000   1.000 1.000    1.000        1.000
+    base                 perturb:typos     0.992      1.000   0.983 0.991    1.000        1.000
+    base        perturb:no_punct_lower     0.992      0.983   1.000 0.992    1.000        1.000
+    base     perturb:shuffle_sentences     1.000      1.000   1.000 1.000    1.000        1.000
+    base unseen_generator:gpt_oss_120b     0.908      1.000   0.704 0.826    1.000        1.000
+    base    unseen_generator:qwen3_27b     0.880      1.000   0.656 0.792    1.000        1.000
+extended                  perturb:none     0.966      0.951   0.983 0.967    0.992        0.983
+extended                 perturb:typos     0.899      0.841   0.983 0.906    0.986        0.966
+extended        perturb:no_punct_lower     0.723      0.933   0.475 0.629    0.801        0.542
+extended     perturb:shuffle_sentences     0.966      0.951   0.983 0.967    0.992        0.983
+extended unseen_generator:gpt_oss_120b     0.977      0.963   0.963 0.963    0.993        1.000
+extended    unseen_generator:qwen3_27b     0.946      0.935   0.906 0.921    0.980        0.938
+(.venv) PS C:\Users\Laptop\Desktop\a3_project> python src/05_plots.py
+figures saved to C:\Users\Laptop\Desktop\a3_project\figures
+(.venv) PS C:\Users\Laptop\Desktop\a3_project> 
+
+============================================================================
+
+Every single script in your pipeline (01_clean_data.py through 05_plots.py)
+ executed cleanly and saved your figures to C:\Users\Laptop\Desktop\a3_project\figures.
+ These numbers tell a compelling, realistic empirical story for your research paper—especially
+  the trade-offs between lexical features (base) and stylometric/emotional features (extended):
+  In-Domain Performance (own_test):Base model (TF-IDF): Achieves 1.000 F1 (95% CI: [1.000, 1.000], ROC-AUC: 1.000)
+   on held-out workplace emails.Extended model (Stylometric + Affective): Achieves 0.967 F1 (95% CI: [0.929, 0.992]
+   , ROC-AUC: 0.992).
+    McNemar's test ($p = 0.134$) confirms the in-domain difference is not statistically significant 
+    (base got 4 rows right that extended missed, and extended got 0 unique rows right).
+    Unseen-Generator Generalization (04_robustness.py) — 
+    Where extended Wins Decisively:When trained on one LLM family and tested on an unseen LLM family,
+    the base model's recall collapses (0.704 on gpt_oss_120b, 0.656 on qwen3_27b; F1 drops to 0.826 and 0.792), 
+    because lexical n-grams overfit to the training generator's vocabulary habits.
+    he extended model generalizes across model families, jumping to 0.963 F1 on unseen gpt_oss_120b 
+    (+13.7 F1 points over base) and 0.921 F1 on unseen qwen3_27b (+12.9 F1 points over base), 
+    maintaining 0.963 and 0.906 recall.Surface Perturbations (04_robustness.py):
+    Sentence shuffling (perturb:shuffle_sentences): Both models are completely invariant 
+    (1.000 F1 for base, 0.967 F1 for extended).Typos (perturb:typos): Base stays at 0.991 F1; 
+    extended drops moderately to 0.906 F1 (recall stays 0.983, precision drops to 0.841 as 
+    typos mimic informal human writing).Stripping punctuation & lowercasing (perturb:no_punct_lower): 
+    Base holds 0.992 F1, whereas extended drops sharply to 0.629 F1 (0.475 recall)—proving that 
+    punctuation patterns and capitalization are major signals inside your stylometric/affective feature set.
+    Cross-Domain Transfer (external — HC3 Q&A):Both models fail to transfer zero-shot from workplace emails 
+    (enron_email) to encyclopedia/Reddit Q&A (hc3_qa), predicting almost everything as human 
+    (0.000 F1 for base, 0.000–0.017 CI for extended; ROC-AUC 0.473 vs. 0.236). 
+    That is a classic domain-shift finding:
+    models trained exclusively on concise workplace emails misclassify formal explanatory Q&A responses as
+    human text without domain adaptation.
+
+
+    ================================== 20th november ============================================
+
+(.venv) PS C:\Users\Laptop\Desktop\a3_project> python src/01_clean_data.py
+           file  rows_in  rows_out  share_AI
+     own_corpus      592       592       0.5
+external_corpus      600       600       0.5
+(.venv) PS C:\Users\Laptop\Desktop\a3_project> python src/02_base_model.py
+         accuracy        f1      roc_auc     
+             mean  std mean  std    mean  std
+dataset                                      
+external      0.5  0.0  0.0  0.0   0.473  0.0
+own_test      1.0  0.0  1.0  0.0   1.000  0.0
+(.venv) PS C:\Users\Laptop\Desktop\a3_project> python src/03_extended_model.py
+ dataset    model  f1_ci_lo  f1_ci_hi  auc_ci_lo  auc_ci_hi  mcnemar_p_base_vs_ext  base_only_correct  ext_only_correct
+own_test     base     1.000     1.000      1.000      1.000                  0.134                  4                 0
+own_test extended     0.929     0.992      0.975      1.000                  0.134                  4                 0
+external     base     0.000     0.000      0.427      0.520                  0.000                 59                 1
+external extended     0.000     0.017      0.198      0.274                  0.000                 59                 1
+(.venv) PS C:\Users\Laptop\Desktop\a3_project> python src/04_robustness.py
+   model                          test  accuracy  precision  recall    f1  roc_auc  tpr_at_5fpr
+    base     perturb:strip_boilerplate     0.975      1.000   0.949 0.974    1.000        1.000
+    base                  perturb:none     1.000      1.000   1.000 1.000    1.000        1.000
+    base                 perturb:typos     0.992      1.000   0.983 0.991    1.000        1.000
+    base        perturb:no_punct_lower     0.992      0.983   1.000 0.992    1.000        1.000
+    base     perturb:shuffle_sentences     1.000      1.000   1.000 1.000    1.000        1.000
+    base unseen_generator:gpt_oss_120b     0.908      1.000   0.704 0.826    1.000        1.000
+    base    unseen_generator:qwen3_27b     0.880      1.000   0.656 0.792    1.000        1.000
+extended     perturb:strip_boilerplate     0.958      0.950   0.966 0.958    0.988        0.966
+extended                  perturb:none     0.966      0.951   0.983 0.967    0.992        0.983
+extended                 perturb:typos     0.899      0.841   0.983 0.906    0.986        0.966
+extended        perturb:no_punct_lower     0.723      0.933   0.475 0.629    0.801        0.542
+extended     perturb:shuffle_sentences     0.966      0.951   0.983 0.967    0.992        0.983
+extended unseen_generator:gpt_oss_120b     0.977      0.963   0.963 0.963    0.993        1.000
+extended    unseen_generator:qwen3_27b     0.946      0.935   0.906 0.921    0.980        0.938
+(.venv) PS C:\Users\Laptop\Desktop\a3_project> python src/08_top_features.py
+direction       feature  weight
+    human            be   -0.80
+    human         would   -0.80
+    human           not   -0.79
+    human            is   -0.76
+    human         enron   -0.75
+    human            of   -0.67
+    human          will   -0.67
+    human          what   -0.66
+    human           gas   -0.61
+    human            it   -0.59
+    human          2001   -0.54
+    human          they   -0.53
+    human            do   -0.53
+    human       will be   -0.52
+    human         phone   -0.52
+    human            in   -0.49
+    human         other   -0.49
+    human          have   -0.48
+    human        of the   -0.48
+    human          when   -0.48
+    human         think   -0.48
+    human           was   -0.47
+    human            as   -0.46
+    human        is the   -0.45
+    human          deal   -0.44
+       AI          team    1.88
+       AI            hi    1.58
+       AI       hi team    1.52
+       AI        review    1.13
+       AI          your    1.09
+       AI    review the    0.95
+       AI          best    0.92
+       AI        friday    0.91
+       AI   team please    0.90
+       AI            by    0.88
+       AI        ensure    0.88
+       AI      for your    0.84
+       AI           our    0.83
+       AI        please    0.82
+       AI please review    0.79
+       AI        before    0.79
+       AI          next    0.78
+       AI         sarah    0.78
+       AI          name    0.77
+       AI           let    0.75
+       AI     your name    0.71
+       AI           any    0.70
+       AI     by friday    0.69
+       AI      thursday    0.68
+       AI        end of    0.66
+(.venv) PS C:\Users\Laptop\Desktop\a3_project> python src/05_plots.py
+figures saved to C:\Users\Laptop\Desktop\a3_project\figures
+(.venv) PS C:\Users\Laptop\Desktop\a3_project>    
+
+(.venv) PS C:\Users\Laptop\Desktop\a3_project> python src/09_repeated_splits.py
+                accuracy            f1        roc_auc       
+                    mean    std   mean    std    mean    std
+corpus model                                                
+hc3    base        0.946  0.015  0.945  0.015   0.990  0.003
+       extended    0.941  0.008  0.941  0.008   0.982  0.005
+own    base        0.989  0.006  0.989  0.006   1.000  0.000
+       extended    0.927  0.018  0.927  0.019   0.980  0.006
+direction    model  accuracy  precision  recall    f1  roc_auc  tpr_at_5fpr
+ own->hc3     base     0.500      0.000   0.000 0.000    0.460        0.037
+ own->hc3 extended     0.427      0.000   0.000 0.000    0.249        0.000
+ hc3->own     base     0.507      0.591   0.044 0.082    0.658        0.081
+ hc3->own extended     0.486      0.423   0.074 0.126    0.486        0.037
+(.venv) PS C:\Users\Laptop\Desktop\a3_project> 
+
+(.venv) PS C:\Users\Laptop\Desktop\a3_project> python src/01_clean_data.py     
+           file  rows_in  rows_out  share_AI
+     own_corpus      592       592       0.5
+external_corpus      600       600       0.5
+(.venv) PS C:\Users\Laptop\Desktop\a3_project> python src/02_base_model.py
+         accuracy        f1      roc_auc     
+             mean  std mean  std    mean  std
+dataset                                      
+external      0.5  0.0  0.0  0.0   0.473  0.0
+own_test      1.0  0.0  1.0  0.0   1.000  0.0
+(.venv) PS C:\Users\Laptop\Desktop\a3_project> python src/03_extended_model.py
+ dataset    model  f1_ci_lo  f1_ci_hi  auc_ci_lo  auc_ci_hi  mcnemar_p_base_vs_ext  base_only_correct  ext_only_correct
+own_test     base     1.000     1.000      1.000      1.000                  0.074                  5                 0
+own_test extended     0.915     0.991      0.976      1.000                  0.074                  5                 0
+external     base     0.000     0.000      0.427      0.520                  0.000                 30                 1
+external extended     0.000     0.019      0.218      0.297                  0.000                 30                 1
+(.venv) PS C:\Users\Laptop\Desktop\a3_project> python src/04_robustness.py
+   model                          test  accuracy  precision  recall    f1  roc_auc  tpr_at_5fpr
+    base     perturb:strip_boilerplate     0.975      1.000   0.949 0.974    1.000        1.000
+    base                  perturb:none     1.000      1.000   1.000 1.000    1.000        1.000
+    base                 perturb:typos     0.992      1.000   0.983 0.991    1.000        1.000
+    base        perturb:no_punct_lower     0.992      0.983   1.000 0.992    1.000        1.000
+    base     perturb:shuffle_sentences     1.000      1.000   1.000 1.000    1.000        1.000
+    base unseen_generator:gpt_oss_120b     0.908      1.000   0.704 0.826    1.000        1.000
+    base    unseen_generator:qwen3_27b     0.880      1.000   0.656 0.792    1.000        1.000
+extended     perturb:strip_boilerplate     0.958      0.950   0.966 0.958    0.988        0.966
+extended                  perturb:none     0.966      0.951   0.983 0.967    0.992        0.983
+extended                 perturb:typos     0.899      0.841   0.983 0.906    0.986        0.966
+extended        perturb:no_punct_lower     0.723      0.933   0.475 0.629    0.801        0.542
+extended     perturb:shuffle_sentences     0.966      0.951   0.983 0.967    0.992        0.983
+extended unseen_generator:gpt_oss_120b     0.977      0.963   0.963 0.963    0.993        1.000
+extended    unseen_generator:qwen3_27b     0.946      0.935   0.906 0.921    0.980        0.938
+(.venv) PS C:\Users\Laptop\Desktop\a3_project> python src/08_top_features.py
+direction       feature  weight
+    human            be   -0.80
+    human         would   -0.80
+    human           not   -0.79
+    human            is   -0.76
+    human         enron   -0.75
+    human            of   -0.67
+    human          will   -0.67
+    human          what   -0.66
+    human           gas   -0.61
+    human            it   -0.59
+    human          2001   -0.54
+    human          they   -0.53
+    human            do   -0.53
+    human       will be   -0.52
+    human         phone   -0.52
+    human            in   -0.49
+    human         other   -0.49
+    human          have   -0.48
+    human        of the   -0.48
+    human          when   -0.48
+    human         think   -0.48
+    human           was   -0.47
+    human            as   -0.46
+    human        is the   -0.45
+    human          deal   -0.44
+       AI          team    1.88
+       AI            hi    1.58
+       AI       hi team    1.52
+       AI        review    1.13
+       AI          your    1.09
+       AI    review the    0.95
+       AI          best    0.92
+       AI        friday    0.91
+       AI   team please    0.90
+       AI            by    0.88
+       AI        ensure    0.88
+       AI      for your    0.84
+       AI           our    0.83
+       AI        please    0.82
+       AI please review    0.79
+       AI        before    0.79
+       AI          next    0.78
+       AI         sarah    0.78
+       AI          name    0.77
+       AI           let    0.75
+       AI     your name    0.71
+       AI           any    0.70
+       AI     by friday    0.69
+       AI      thursday    0.68
+       AI        end of    0.66
+(.venv) PS C:\Users\Laptop\Desktop\a3_project> python src/09_repeated_splits.py
+                accuracy            f1        roc_auc       
+                    mean    std   mean    std    mean    std
+corpus model                                                
+hc3    base        0.946  0.015  0.945  0.015   0.990  0.003
+       extended    0.941  0.008  0.941  0.008   0.982  0.005
+own    base        0.989  0.006  0.989  0.006   1.000  0.000
+       extended    0.927  0.018  0.927  0.019   0.980  0.006
+direction    model  accuracy  precision  recall    f1  roc_auc  tpr_at_5fpr
+ own->hc3     base     0.500      0.000   0.000 0.000    0.460        0.037
+ own->hc3 extended     0.427      0.000   0.000 0.000    0.249        0.000
+ hc3->own     base     0.507      0.591   0.044 0.082    0.658        0.081
+ hc3->own extended     0.486      0.423   0.074 0.126    0.486        0.037
+(.venv) PS C:\Users\Laptop\Desktop\a3_project> python src/05_plots.py
+figures saved to C:\Users\Laptop\Desktop\a3_project\figures
+(.venv) PS C:\Users\Laptop\Desktop\a3_project> 
+
+(.venv) PS C:\Users\Laptop\Desktop\a3_project> python src/10_make_emotion_lexicon.py
+13901 word-emotion pairs; 6468 words; ['anger', 'anticipation', 'disgust', 'fear', 'joy', 'negative', 'positive', 'sadness', 'surprise', 'trust']
+
+(.venv) PS C:\Users\Laptop\Desktop\a3_project> python src/01_clean_data.py
+           file  rows_in  rows_out  share_AI
+     own_corpus      592       592       0.5
+external_corpus      600       600       0.5
+(.venv) PS C:\Users\Laptop\Desktop\a3_project> python src/02_base_model.py
+         accuracy        f1      roc_auc     
+             mean  std mean  std    mean  std
+dataset                                      
+external      0.5  0.0  0.0  0.0   0.473  0.0
+own_test      1.0  0.0  1.0  0.0   1.000  0.0
+(.venv) PS C:\Users\Laptop\Desktop\a3_project> python src/03_extended_model.py
+ dataset    model  f1_ci_lo  f1_ci_hi  auc_ci_lo  auc_ci_hi  mcnemar_p_base_vs_ext  base_only_correct  ext_only_correct
+own_test     base     1.000     1.000      1.000      1.000                  0.074                  5                 0
+own_test extended     0.915     0.991      0.976      1.000                  0.074                  5                 0
+external     base     0.000     0.000      0.427      0.520                  0.000                 30                 1
+external extended     0.000     0.019      0.218      0.297                  0.000                 30                 1
+(.venv) PS C:\Users\Laptop\Desktop\a3_project> python src/04_robustness.py
+   model                          test  accuracy  precision  recall    f1  roc_auc  tpr_at_5fpr
+    base     perturb:strip_boilerplate     0.975      1.000   0.949 0.974    1.000        1.000
+    base                  perturb:none     1.000      1.000   1.000 1.000    1.000        1.000
+    base                 perturb:typos     0.992      1.000   0.983 0.991    1.000        1.000
+    base        perturb:no_punct_lower     0.992      0.983   1.000 0.992    1.000        1.000
+    base     perturb:shuffle_sentences     1.000      1.000   1.000 1.000    1.000        1.000
+    base unseen_generator:gpt_oss_120b     0.908      1.000   0.704 0.826    1.000        1.000
+    base    unseen_generator:qwen3_27b     0.880      1.000   0.656 0.792    1.000        1.000
+extended     perturb:strip_boilerplate     0.958      0.950   0.966 0.958    0.989        0.983
+extended                  perturb:none     0.958      0.950   0.966 0.958    0.992        0.966
+extended                 perturb:typos     0.908      0.853   0.983 0.913    0.984        0.966
+extended        perturb:no_punct_lower     0.706      0.929   0.441 0.598    0.811        0.576
+extended     perturb:shuffle_sentences     0.958      0.950   0.966 0.958    0.992        0.966
+extended unseen_generator:gpt_oss_120b     0.966      0.929   0.963 0.945    0.987        0.963
+extended    unseen_generator:qwen3_27b     0.967      1.000   0.906 0.951    0.982        0.906
+(.venv) PS C:\Users\Laptop\Desktop\a3_project> python src/08_top_features.py
+direction       feature  weight
+    human            be   -0.80
+    human         would   -0.80
+    human           not   -0.79
+    human            is   -0.76
+    human         enron   -0.75
+    human            of   -0.67
+    human          will   -0.67
+    human          what   -0.66
+    human           gas   -0.61
+    human            it   -0.59
+    human          2001   -0.54
+    human          they   -0.53
+    human            do   -0.53
+    human       will be   -0.52
+    human         phone   -0.52
+    human            in   -0.49
+    human         other   -0.49
+    human          have   -0.48
+    human        of the   -0.48
+    human          when   -0.48
+    human         think   -0.48
+    human           was   -0.47
+    human            as   -0.46
+    human        is the   -0.45
+    human          deal   -0.44
+       AI          team    1.88
+       AI            hi    1.58
+       AI       hi team    1.52
+       AI        review    1.13
+       AI          your    1.09
+       AI    review the    0.95
+       AI          best    0.92
+       AI        friday    0.91
+       AI   team please    0.90
+       AI            by    0.88
+       AI        ensure    0.88
+       AI      for your    0.84
+       AI           our    0.83
+       AI        please    0.82
+       AI please review    0.79
+       AI        before    0.79
+       AI          next    0.78
+       AI         sarah    0.78
+       AI          name    0.77
+       AI           let    0.75
+       AI     your name    0.71
+       AI           any    0.70
+       AI     by friday    0.69
+       AI      thursday    0.68
+       AI        end of    0.66
+(.venv) PS C:\Users\Laptop\Desktop\a3_project> python src/09_repeated_splits.py
+                           accuracy            f1        roc_auc       
+                               mean    std   mean    std    mean    std
+corpus model                                                           
+hc3    base                   0.946  0.015  0.945  0.015   0.990  0.003
+       stylometric            0.941  0.008  0.941  0.008   0.982  0.005
+       stylometric+emotion    0.927  0.019  0.926  0.021   0.979  0.007
+own    base                   0.989  0.006  0.989  0.006   1.000  0.000
+       stylometric            0.927  0.018  0.927  0.019   0.980  0.006
+       stylometric+emotion    0.931  0.023  0.932  0.023   0.978  0.006
+direction               model  accuracy  precision  recall    f1  roc_auc  tpr_at_5fpr
+ own->hc3                base     0.500      0.000   0.000 0.000    0.460        0.037
+ own->hc3         stylometric     0.427      0.000   0.000 0.000    0.249        0.000
+ own->hc3 stylometric+emotion     0.467      0.083   0.007 0.012    0.303        0.000
+ hc3->own                base     0.507      0.591   0.044 0.082    0.658        0.081
+ hc3->own         stylometric     0.486      0.423   0.074 0.126    0.486        0.037
+ hc3->own stylometric+emotion     0.483      0.407   0.074 0.126    0.487        0.030
+(.venv) PS C:\Users\Laptop\Desktop\a3_project> python src/05_plots.py
+figures saved to C:\Users\Laptop\Desktop\a3_project\figures
+(.venv) PS C:\Users\Laptop\Desktop\a3_project> 

@@ -1,0 +1,12 @@
+# Submission checklist (due Sat 21 Nov 2026, 11:59 PM, no extension)
+- [ ] Base paper: Q1/Q2 JOURNAL, 2025/2026, quartile screenshot (SCImago/WoS) in paper
+- [ ] Other refs 2021-2026, every ref has DOI/link, IEEE BibTeX
+- [ ] Gap paragraph + novelty + 3-5 verb-first contributions + organisation paragraph
+- [ ] Gap table 10-15 studies, last row = proposed work, G1.. paragraph
+- [ ] Own data + 1 extra dataset; ethics/consent statement if survey
+- [ ] Hypotheses H1.. with results table; >=5,000 bootstrap; power analysis; reliability/validity; CMB check (Track C)
+- [ ] Figures self-drawn, >=400 DPI/vector, >=8 pt, captioned and cited before they appear; booktabs tables
+- [ ] Similarity <15% and AI report; AI use declared; CRediT statement
+- [ ] Overleaf view link shared; PDF named i22-xxxx_REPORT_SECTION.pdf + source .zip
+- [ ] Notebook runs end to end; requirements, anonymised data, codebook, questionnaire, .drawio sources, README with all names/rolls
+- [ ] Demo and viva rehearsed (all members)
