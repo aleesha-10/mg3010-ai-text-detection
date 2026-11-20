@@ -120,43 +120,56 @@ mg3010-ai-text-detection/
 
 ###  Figures
 
-Figures 4-6 are produced by `src/05_plots.py` (400 dpi PNG + vector PDF in `figures/`). Figures 1-3 are drawn by hand (draw.io) and kept as editable sources in `diagram_sources/`. To fill a placeholder, save the image under the given name and uncomment its line.
+Figures 4-8 are produced by `src/05_plots.py` (400 dpi PNG + vector PDF in `figures/`). Figures 1-3 are drawn by hand (draw.io) and kept as editable sources in `diagram_sources/`. To fill a placeholder, save the image under the given name and uncomment its line.
 
 #### Figure 1. Research design / methodology flowchart
-<!-- ![Figure 1: Research design](figures/research_design.png) -->
+<!-- <img src="figures/research_design.png" width="480" alt="Figure 1: Research design"> -->
 > *Placeholder: `figures/research_design.png`. Caption: end-to-end pipeline from data collection (AESLC emails, LLM generation, HC3) through cleaning, base and extended models, robustness tests and evaluation.*
 
 #### Figure 2. Conceptual framework
-<!-- ![Figure 2: Conceptual framework](figures/conceptual_framework.png) -->
+<!-- <img src="figures/conceptual_framework.png" width="480" alt="Figure 2: Conceptual framework"> -->
 > *Placeholder: `figures/conceptual_framework.png`. Caption: how generator, formatting and domain shifts are expected to affect detector performance, and where stylometric and emotion features enter.*
 
 #### Figure 3. Case-study diagram
-<!-- ![Figure 3: Case study](figures/case_study.png) -->
+<!-- <img src="figures/case_study.png" width="480" alt="Figure 3: Case study"> -->
 > *Placeholder: `figures/case_study.png`. Caption: practical use case, screening incoming outreach messages with a detector and what happens when the sender changes LLM or formatting.*
 
 #### Figure 4. ROC curves, own emails vs HC3
-![Figure 4: ROC curves](figures/fig_roc.png)
+<img src="figures/fig_roc.png" width="520" alt="Figure 4: ROC curves">
+
 *Base vs extended model on the held-out own test set (left) and zero-shot on HC3 (right).*
 
-#### Figure 5. F1 over 5 grouped random splits
-![Figure 5: F1 across grouped splits](figures/fig_repeated_splits.png)
-*Mean ± SD with each split shown as a dot, for base, + stylometric and + stylometric + emotion models.*
+<table>
+<tr>
+<td align="center" valign="top" width="50%">
+<b>Figure 5. F1 over 5 grouped splits</b><br>
+<img src="figures/fig_repeated_splits.png" width="300" alt="Figure 5: F1 across grouped splits"><br>
+<i>Mean ± SD, each split a dot, for base, + stylometric and + stylometric + emotion models.</i>
+</td>
+<td align="center" valign="top" width="50%">
+<b>Figure 6. Robustness checks</b><br>
+<img src="figures/fig_robustness.png" width="300" alt="Figure 6: Robustness"><br>
+<i>F1 under typos, punctuation/case removal, sentence shuffling, boilerplate stripping and unseen generators.</i>
+</td>
+</tr>
+<tr>
+<td align="center" valign="top">
+<b>Figure 7. Cross-corpus transfer</b><br>
+<img src="figures/fig_transfer.png" width="300" alt="Figure 7: Cross-corpus transfer"><br>
+<i>ROC-AUC when training on own emails and testing on HC3, and vice versa; dotted line is chance.</i>
+</td>
+<td align="center" valign="top">
+<b>Figure 9. Your own figure</b><br>
+<!-- <img src="figures/your_figure.png" width="300" alt="Figure 9"><br> -->
+<i>Placeholder: <code>figures/your_figure.png</code>. Add a caption here.</i>
+</td>
+</tr>
+</table>
 
-#### Figure 6. Robustness to perturbations and unseen generators
-![Figure 6: Robustness](figures/fig_robustness.png)
-*F1 under typos, punctuation/case removal, sentence shuffling, boilerplate stripping and leave-one-generator-out.*
+#### Figure 8. Words the base detector relies on
+<img src="figures/fig_top_features.png" width="520" alt="Figure 8: Top features">
 
-#### Figure 7. Cross-corpus transfer (optional)
-<!-- ![Figure 7: Cross-corpus transfer](figures/fig_transfer.png) -->
-> *Placeholder: `figures/fig_transfer.png`. Caption: ROC-AUC when training on own emails and testing on HC3 and vice versa, with the chance level marked. Data: `tables/transfer.csv`.*
-
-#### Figure 8. Words the base detector relies on (optional)
-<!-- ![Figure 8: Top features](figures/fig_top_features.png) -->
-> *Placeholder: `figures/fig_top_features.png`. Caption: highest-weight words pointing to human and to AI text. Data: `tables/top_features.csv`.*
-
-#### Figure 9. Your own figure
-<!-- ![Figure 9: Title](figures/your_figure.png) -->
-> *Placeholder: `figures/your_figure.png`. Add a caption here.*
+*Highest-weight words pointing to human (left) and AI (right) text. Data: `tables/top_features.csv`.*
 
 ---
 

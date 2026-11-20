@@ -1,4 +1,4 @@
-"""Step 5: figures (matplotlib; PNG at 400 dpi + vector PDF). Run after 02, 03, 04, 09.
+"""Step 5: figures (matplotlib; PNG at 400 dpi + vector PDF). Run after 02, 03, 04, 08, 09.
 Palette: olive / ochre / deep teal (dark, colour-blind-safe by luminance; lines also differ in style)."""
 import sys, pathlib
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
@@ -63,3 +63,24 @@ if rb is not None:
         ax.barh(y + (k - .5) * h, p[m], h * .95, color=COL[m], label=LAB[m])
     ax.set_yticks(y, [t.replace("perturb:", "").replace("unseen_generator:", "unseen: ").replace("_", " ") for t in p.index])
     ax.set_xlabel("F1"); ax.set_xlim(0, 1.05); ax.legend(frameon=False, loc="upper center", bbox_to_anchor=(.4, -.16), fontsize=7.5, ncol=2); fig.tight_layout(); save(fig, "fig_robustness")
+
+# 5. Cross-corpus transfer (ROC-AUC vs chance)
+tr = table("transfer.csv")
+if tr is not None:
+    models = [m for m in ["base", "stylometric", "stylometric+emotion"] if m in set(tr.model)]
+    fig, ax = plt.subplots(figsize=(3.5, 3.1)); w = .25
+    for i, m in enumerate(models):
+        v = tr[tr.model == m].set_index("direction").roc_auc.reindex(["own->hc3", "hc3->own"])
+        ax.bar(np.arange(2) + (i - (len(models) - 1) / 2) * w, v.values, w * .9, color=COL[m], label=LAB[m])
+    ax.axhline(.5, color=INK, ls=":", lw=1); ax.text(1.5, .515, "chance", ha="right", fontsize=7.5)
+    ax.set_xticks([0, 1], ["own → HC3", "HC3 → own"]); ax.set_ylabel("ROC-AUC"); ax.set_ylim(0, 1)
+    ax.legend(frameon=False, loc="upper center", bbox_to_anchor=(.5, -.12), fontsize=7.5, ncol=1); fig.tight_layout(); save(fig, "fig_transfer")
+
+# 6. What the base detector relies on
+tf = table("top_features.csv")
+if tf is not None:
+    fig, axs = plt.subplots(1, 2, figsize=(7.1, 3.6))
+    for ax, dirn, c, ttl in zip(axs, ["human", "AI"], [OCHRE, OLIVE], ["Words pointing to human", "Words pointing to AI"]):
+        d = tf[tf.direction == dirn].copy(); d["a"] = d.weight.abs(); d = d.sort_values("a").tail(15)
+        ax.barh(d.feature, d.a, color=c); ax.set_title(ttl); ax.set_xlabel("|logistic-regression weight|")
+    fig.tight_layout(); save(fig, "fig_top_features")
