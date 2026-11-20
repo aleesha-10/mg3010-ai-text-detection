@@ -1,0 +1,16 @@
+# Dependency file for the analysis (Assignment 3).
+# After your final successful run, replace these with exact versions:
+#   pip freeze > requirements_frozen.txt   (and keep both files)
+numpy
+pandas
+scipy
+scikit-learn
+statsmodels
+matplotlib
+networkx
+shap
+torch
+transformers
+datasets
+jupyter
+nbformat

@@ -1,0 +1,7 @@
+variable,description,type,allowed_values_or_scale,source
+text_id,Unique message identifier,string,,
+text,Message text (no personal details),string,,
+label,Human-written (0) or AI-written (1),integer,0/1,
+generator,Which LLM wrote it (blank for human),string,,
+domain,Where the text comes from,string,,
+split,train / val / test,string,train|val|test,
