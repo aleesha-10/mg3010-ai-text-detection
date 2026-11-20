@@ -1,37 +1,65 @@
-"""Step 5: figures (matplotlib, saved at 400 dpi as PNG + vector PDF)."""
+"""Step 5: figures (matplotlib; PNG at 400 dpi + vector PDF). Run after 02, 03, 04, 09.
+Palette: olive / ochre / deep teal (dark, colour-blind-safe by luminance; lines also differ in style)."""
 import sys, pathlib
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
-import pandas as pd, matplotlib
+import numpy as np, pandas as pd, matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from sklearn.metrics import roc_curve
+from sklearn.metrics import roc_curve, confusion_matrix
 import config
 
+OLIVE, OCHRE, TEAL, INK, GRID = "#56622B", "#B0701F", "#2C5A5E", "#26282A", "#D9D6CC"
+COL = {"base": OLIVE, "stylometric": OCHRE, "extended": OCHRE, "stylometric+emotion": TEAL}
+LAB = {"base": "Base (TF-IDF)", "extended": "Extended", "stylometric": "+ stylometric", "stylometric+emotion": "+ stylometric + emotion"}
 plt.rcParams.update(config.FIG_STYLE)
+plt.rcParams.update({"axes.edgecolor": INK, "axes.labelcolor": INK, "text.color": INK, "xtick.color": INK,
+                     "ytick.color": INK, "axes.grid": True, "grid.color": GRID, "grid.linewidth": .6, "axes.axisbelow": True})
 config.FIG_DIR.mkdir(exist_ok=True)
+
+
 def save(fig, name):
     fig.savefig(config.FIG_DIR / f"{name}.png", dpi=config.DPI); fig.savefig(config.FIG_DIR / f"{name}.pdf"); plt.close(fig)
+    print("saved", name)
 
-# Fig: ROC base vs extended
-fig, axs = plt.subplots(1, 2, figsize=(7, 3), sharey=True)
-for ax, d in zip(axs, ["own_test", "external"]):
-    for tag in ["base", "extended"]:
-        x = pd.read_csv(config.TAB_DIR / f"preds_{tag}.csv").query("dataset == @d")
-        fpr, tpr, _ = roc_curve(x.y, x.score); ax.plot(fpr, tpr, label=tag)
-    ax.plot([0, 1], [0, 1], "k:", lw=.8); ax.set_title(d); ax.set_xlabel("False positive rate")
-axs[0].set_ylabel("True positive rate"); axs[0].legend(); fig.tight_layout(); save(fig, "fig_roc")
 
-# Fig: F1 across seeds, own vs external
-r = pd.concat([pd.read_csv(config.TAB_DIR / f"results_{t}.csv") for t in ["base", "extended"]])
-m = r.groupby(["dataset", "model"]).f1.agg(["mean", "std"]).reset_index()
-fig, ax = plt.subplots(figsize=(3.4, 2.6))
-for i, tag in enumerate(["base", "extended"]):
-    s = m[m.model == tag]; ax.bar([j + i * .38 for j in range(len(s))], s["mean"], .38, yerr=s["std"], label=tag, capsize=2)
-ax.set_xticks([.19, 1.19]); ax.set_xticklabels(sorted(m.dataset.unique())); ax.set_ylabel("F1 (mean ± SD, 5 seeds)"); ax.legend()
-fig.tight_layout(); save(fig, "fig_f1_seeds")
+def table(name):
+    p = config.TAB_DIR / name
+    if not p.exists():
+        print(f"SKIP: {name} missing (run the earlier step)"); return None
+    return pd.read_csv(p)
 
-# Fig: robustness
-rb = pd.read_csv(config.TAB_DIR / "robustness.csv")
-p = rb.pivot(index="test", columns="model", values="f1")
-fig, ax = plt.subplots(figsize=(3.4, 3)); p.plot.barh(ax=ax); ax.set_xlabel("F1"); ax.set_ylabel(""); fig.tight_layout(); save(fig, "fig_robustness")
-print("figures saved to", config.FIG_DIR)
+
+# 1. ROC curves (fixed split, own test and HC3)
+pb, pe = table("preds_base.csv"), table("preds_extended.csv")
+if pb is not None and pe is not None:
+    fig, axs = plt.subplots(1, 2, figsize=(7.1, 3.1), sharey=True)
+    for ax, d, ttl in zip(axs, ["own_test", "external"], ["Own emails (held-out test)", "HC3 (zero-shot transfer)"]):
+        for tag, df, ls in [("base", pb, "-"), ("extended", pe, "--")]:
+            x = df[df.dataset == d]; fpr, tpr, _ = roc_curve(x.y, x.score)
+            ax.plot(fpr, tpr, ls, color=COL[tag], lw=1.8, label=LAB[tag])
+        ax.plot([0, 1], [0, 1], ":", color=INK, lw=.9); ax.set_title(ttl); ax.set_xlabel("False positive rate")
+    axs[0].set_ylabel("True positive rate"); axs[0].legend(loc="lower right", frameon=False); fig.tight_layout(); save(fig, "fig_roc")
+
+
+# 3. Repeated grouped splits: F1 mean +/- SD with every split as a dot
+rs = table("repeated_splits.csv")
+if rs is not None:
+    models = [m for m in ["base", "stylometric", "stylometric+emotion"] if m in set(rs.model)]
+    fig, ax = plt.subplots(figsize=(3.5, 3.1)); w = .24
+    for i, m in enumerate(models):
+        for c, corp in enumerate(["own", "hc3"]):
+            v = rs[(rs.model == m) & (rs.corpus == corp)].f1; x = c + (i - (len(models) - 1) / 2) * w
+            ax.scatter(np.full(len(v), x), v, s=9, color=COL[m], alpha=.35, zorder=2)
+            ax.errorbar(x, v.mean(), yerr=v.std(), fmt="o", color=COL[m], ms=6, capsize=3, lw=1.6, zorder=3, label=LAB[m] if c == 0 else None)
+    ax.set_xticks([0, 1], ["Own emails", "HC3"]); ax.set_xlim(-.55, 1.55); ax.set_ylabel("F1 (mean ± SD, 5 grouped splits)")
+    ax.legend(frameon=False, loc="upper center", bbox_to_anchor=(.5, -.12), fontsize=7.5, ncol=1); fig.tight_layout(); save(fig, "fig_repeated_splits")
+
+# 4. Robustness (fixed split): F1 under perturbation / unseen generator
+rb = table("robustness.csv")
+if rb is not None:
+    p = rb.pivot(index="test", columns="model", values="f1").sort_values("base")
+    fig, ax = plt.subplots(figsize=(3.5, 3.3)); y = np.arange(len(p)); h = .38
+    for k, m in enumerate([c for c in ["base", "extended"] if c in p.columns]):
+        ax.barh(y + (k - .5) * h, p[m], h * .95, color=COL[m], label=LAB[m])
+    ax.set_yticks(y, [t.replace("perturb:", "").replace("unseen_generator:", "unseen: ").replace("_", " ") for t in p.index])
+    ax.set_xlabel("F1"); ax.set_xlim(0, 1.05); ax.legend(frameon=False, loc="upper center", bbox_to_anchor=(.4, -.16), fontsize=7.5, ncol=2); fig.tight_layout(); save(fig, "fig_robustness")

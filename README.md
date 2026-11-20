@@ -3,11 +3,11 @@
 #  Detecting AI-Written Outreach Messages
 ### Robustness of text detectors across generators, perturbations and domains
 
-![Course](https://img.shields.io/badge/course-MG3010-1f6feb?style=for-the-badge)
-![Track](https://img.shields.io/badge/track-C%20Empirical-8250df?style=for-the-badge)
-![Python](https://img.shields.io/badge/python-3.x-3776ab?style=for-the-badge&logo=python&logoColor=white)
-![Reproducible](https://img.shields.io/badge/seed-42-2da44e?style=for-the-badge)
-![Status](https://img.shields.io/badge/status-submitted-orange?style=for-the-badge)
+![Course](https://img.shields.io/badge/course-MG3010-56622B?style=for-the-badge)
+![Track](https://img.shields.io/badge/track-C%20Empirical-2C5A5E?style=for-the-badge)
+![Python](https://img.shields.io/badge/python-3.x-6B4E2E?style=for-the-badge&logo=python&logoColor=white)
+![Reproducible](https://img.shields.io/badge/seed-42-B0701F?style=for-the-badge)
+![Status](https://img.shields.io/badge/status-submitted-4A3F32?style=for-the-badge)
 
 **Members:** NAME1 (roll no.) · NAME2 (roll no.)
 **Paper:** TITLE
@@ -26,10 +26,6 @@
 | **Second dataset** | HC3 (human vs ChatGPT answers), 300 + 300 texts |
 | **Models** | Base: TF-IDF + logistic regression · Extended: + stylometric + emotion-lexicon features |
 | **Statistics** | Bootstrap CIs (5,000), McNemar's test, 5 grouped random splits (topic never in both train and test) |
-
->  **Space for a project overview figure** (e.g. the research-design flowchart from `diagram_sources/`)
->
-> `![Research design](figures/research_design.png)`
 
 ---
 
@@ -124,13 +120,43 @@ mg3010-ai-text-detection/
 
 ###  Figures
 
-| ROC curves | F1 across splits |
-|---|---|
-| ![ROC](figures/fig_roc.png) | ![F1](figures/fig_f1_seeds.png) |
+Figures 4-6 are produced by `src/05_plots.py` (400 dpi PNG + vector PDF in `figures/`). Figures 1-3 are drawn by hand (draw.io) and kept as editable sources in `diagram_sources/`. To fill a placeholder, save the image under the given name and uncomment its line.
 
-| Robustness checks | Space for your own figure |
-|---|---|
-| ![Robustness](figures/fig_robustness.png) | *add a plot here* |
+#### Figure 1. Research design / methodology flowchart
+<!-- ![Figure 1: Research design](figures/research_design.png) -->
+> *Placeholder: `figures/research_design.png`. Caption: end-to-end pipeline from data collection (AESLC emails, LLM generation, HC3) through cleaning, base and extended models, robustness tests and evaluation.*
+
+#### Figure 2. Conceptual framework
+<!-- ![Figure 2: Conceptual framework](figures/conceptual_framework.png) -->
+> *Placeholder: `figures/conceptual_framework.png`. Caption: how generator, formatting and domain shifts are expected to affect detector performance, and where stylometric and emotion features enter.*
+
+#### Figure 3. Case-study diagram
+<!-- ![Figure 3: Case study](figures/case_study.png) -->
+> *Placeholder: `figures/case_study.png`. Caption: practical use case, screening incoming outreach messages with a detector and what happens when the sender changes LLM or formatting.*
+
+#### Figure 4. ROC curves, own emails vs HC3
+![Figure 4: ROC curves](figures/fig_roc.png)
+*Base vs extended model on the held-out own test set (left) and zero-shot on HC3 (right).*
+
+#### Figure 5. F1 over 5 grouped random splits
+![Figure 5: F1 across grouped splits](figures/fig_repeated_splits.png)
+*Mean ± SD with each split shown as a dot, for base, + stylometric and + stylometric + emotion models.*
+
+#### Figure 6. Robustness to perturbations and unseen generators
+![Figure 6: Robustness](figures/fig_robustness.png)
+*F1 under typos, punctuation/case removal, sentence shuffling, boilerplate stripping and leave-one-generator-out.*
+
+#### Figure 7. Cross-corpus transfer (optional)
+<!-- ![Figure 7: Cross-corpus transfer](figures/fig_transfer.png) -->
+> *Placeholder: `figures/fig_transfer.png`. Caption: ROC-AUC when training on own emails and testing on HC3 and vice versa, with the chance level marked. Data: `tables/transfer.csv`.*
+
+#### Figure 8. Words the base detector relies on (optional)
+<!-- ![Figure 8: Top features](figures/fig_top_features.png) -->
+> *Placeholder: `figures/fig_top_features.png`. Caption: highest-weight words pointing to human and to AI text. Data: `tables/top_features.csv`.*
+
+#### Figure 9. Your own figure
+<!-- ![Figure 9: Title](figures/your_figure.png) -->
+> *Placeholder: `figures/your_figure.png`. Add a caption here.*
 
 ---
 
