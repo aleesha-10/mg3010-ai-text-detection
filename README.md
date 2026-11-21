@@ -7,11 +7,10 @@
 ![Track](https://img.shields.io/badge/track-C%20Empirical-2C5A5E?style=for-the-badge)
 ![Python](https://img.shields.io/badge/python-3.x-6B4E2E?style=for-the-badge&logo=python&logoColor=white)
 ![Reproducible](https://img.shields.io/badge/seed-42-B0701F?style=for-the-badge)
-![Status](https://img.shields.io/badge/status-submitted-4A3F32?style=for-the-badge)
 
-**Members:** NAME1 (roll no.) · NAME2 (roll no.)
+**Members:** Munaza Tariq (23i-2545, group leader) · Aleesha Javed (23i-5055)
 **Paper:** TITLE
-**Base paper:** CITATION (Q1/Q2 journal, quartile proof in `paper/`)
+**Base paper:** Shaikat et al. (2026), *Telematics and Informatics Reports* 23, 100350, doi:10.1016/j.teler.2026.100350 (quartile proof in `paper/`)
 
 </div>
 
@@ -38,20 +37,28 @@ source .venv/bin/activate          # Windows PowerShell: .venv\Scripts\activate
 pip install -r requirements.txt
 
 # 2. data -> data/raw/own_corpus.csv and data/raw/external_corpus.csv
-#    (columns: text_id,text,label,generator,domain; see data/codebook_TEMPLATE.csv)
+#    (columns: text_id,text,label,generator,domain; see data/codebook.csv)
+#    data/raw/ is not in the repo. On a fresh clone rebuild it from data/clean/:
+python src/00_rebuild_raw_from_clean.py
 
-# 3. analysis (run from the project folder, in this order)
+# 3. emotion lexicon (once; needs nrclex) -> data/raw/emotion_lexicon.csv
+python src/10_make_emotion_lexicon.py
+
+# 4. analysis (run from the project folder, in this order), or simply: ./run_all.sh  /  .
+un_all.ps1
 python src/01_clean_data.py
 python src/02_base_model.py
 python src/03_extended_model.py
 python src/04_robustness.py
 python src/08_top_features.py
 python src/09_repeated_splits.py
+python src/11_artefact_checks.py
+python src/12_calibration_and_cleaning.py
 python src/05_plots.py
 ```
 
 >  Smoke test without real data: `python src/make_demo_data.py` writes **synthetic** toy data. Never report demo output.
-> The notebook `notebooks/i22-xxxx_SECTION.ipynb` runs steps 01-05; run 08 and 09 separately.
+> The notebook `notebooks/i235055.ipynb` runs the same steps in the same order.
 
 <details>
 <summary><b> Rebuilding the datasets from scratch</b></summary>
@@ -85,17 +92,20 @@ mg3010-ai-text-detection/
 ├── data/
 │   ├── raw/                   own_corpus.csv, external_corpus.csv, emotion_lexicon.csv
 │   ├── clean/                 cleaned + split data
-│   └── codebook_TEMPLATE.csv
+│   └── codebook.csv
 ├── src/
-│   ├── 01_clean_data.py       cleaning + train/val/test split
+│   ├── 00_rebuild_raw_from_clean.py  fresh clone: rebuild data/raw from data/clean
+│   ├── 01_clean_data.py       cleaning + train/val/test split (grouped by subject)
 │   ├── 02_base_model.py       base model
 │   ├── 03_extended_model.py   extended model, bootstrap CIs, McNemar
 │   ├── 04_robustness.py       perturbations, unseen generators
 │   ├── 05_plots.py            figures (400 dpi)
 │   ├── 06-07, 10_*.py         dataset and lexicon builders
 │   ├── 08_top_features.py     explainability / artefact check
-│   └── 09_repeated_splits.py  grouped splits, ablation, cross-corpus transfer
-├── notebooks/                 i22-xxxx_SECTION.ipynb
+│   ├── 09_repeated_splits.py  grouped splits, ablation, cross-corpus transfer
+│   ├── 11_artefact_checks.py  shortcut / artefact checks
+│   └── 12_calibration_and_cleaning.py  exploratory: calibrated threshold + cleaned corpus
+├── notebooks/                 i235055.ipynb
 ├── tables/                    CSV results
 ├── figures/                   PNG + PDF
 ├── diagram_sources/           editable .drawio files
@@ -108,6 +118,13 @@ mg3010-ai-text-detection/
 
 > Filled from the final run on real data. Update this table if you rerun anything.
 
+**Fixed grouped split (test n = 120; HC3 zero-shot n = 600)**
+
+| Model | Own F1 [95% CI] | Own AUC | HC3 F1 | HC3 AUC |
+|---|---|---|---|---|
+| Base (TF-IDF) | 0.992 [0.972, 1.000] | 1.000 | 0.000 | 0.451 |
+| Extended | 0.911 [0.850, 0.959] | 0.973 | 0.018 | 0.299 |
+
 **F1 over 5 grouped random splits (mean ± SD)**
 
 | Model | Own emails | HC3 |
@@ -116,11 +133,34 @@ mg3010-ai-text-detection/
 | + stylometric | 0.927 ± 0.019 | 0.941 ± 0.008 |
 | + stylometric + emotion | 0.932 ± 0.023 | 0.926 ± 0.021 |
 
-**Cross-corpus transfer (ROC-AUC):** own → HC3 and HC3 → own are at or below chance for all models (see `tables/transfer.csv`).
+**Robustness, fixed split (F1, base / extended)**
+
+| Test | Base | Extended |
+|---|---|---|
+| none | 0.992 | 0.911 |
+| typos | 0.975 | 0.868 |
+| no punct lower | 0.992 | 0.506 |
+| shuffle sentences | 0.992 | 0.918 |
+| strip boilerplate | 0.947 | 0.908 |
+| gpt oss 120b (unseen) | 0.800 | 0.862 |
+| qwen3 27b (unseen) | 0.824 | 0.852 |
+
+**Cross-corpus transfer (ROC-AUC, base):** own → HC3 0.460, HC3 → own 0.658; no model is clearly above chance in both directions (see `tables/transfer.csv`).
+
+**Exploratory (step 12): validation-calibrated threshold and artefact-cleaned corpus.** F1 on unseen generators, 5 grouped splits × 2 held-out generators (mean ± SD):
+
+| Model | Corpus | Threshold 0.5 | Validation-calibrated |
+|---|---|---|---|
+| Base | original | 0.784 ± 0.075 | 0.957 ± 0.036 |
+| Base | cleaned | 0.734 ± 0.075 | 0.927 ± 0.032 |
+| Extended | original | 0.865 ± 0.032 | 0.846 ± 0.047 |
+| Extended | cleaned | 0.869 ± 0.030 | 0.818 ± 0.057 |
+
+Full tables, LaTeX versions and the H6 decision: `paper/RESULTS_UPDATE.md` (regenerate with `python paper/make_results_update.py`).
 
 ###  Figures
 
-Figures 4-8 are produced by `src/05_plots.py` (400 dpi PNG + vector PDF in `figures/`). Figures 1-3 are drawn by hand (draw.io) and kept as editable sources in `diagram_sources/`. To fill a placeholder, save the image under the given name and uncomment its line.
+Figures 4-9 are produced by `src/05_plots.py` (400 dpi PNG + vector PDF in `figures/`). Figures 1-3 are drawn by hand (draw.io) and kept as editable sources in `diagram_sources/`. To fill a placeholder, save the image under the given name and uncomment its line.
 
 #### Figure 1. Research design / methodology flowchart
 <!-- <img src="figures/research_design.png" width="480" alt="Figure 1: Research design"> -->
@@ -159,9 +199,9 @@ Figures 4-8 are produced by `src/05_plots.py` (400 dpi PNG + vector PDF in `figu
 <i>ROC-AUC when training on own emails and testing on HC3, and vice versa; dotted line is chance.</i>
 </td>
 <td align="center" valign="top">
-<b>Figure 9. Your own figure</b><br>
-<!-- <img src="figures/your_figure.png" width="300" alt="Figure 9"><br> -->
-<i>Placeholder: <code>figures/your_figure.png</code>. Add a caption here.</i>
+<b>Figure 9. Threshold calibration (exploratory)</b><br>
+<img src="figures/fig_calibration.png" width="300" alt="Figure 9: Threshold calibration"><br>
+<i>Unseen-generator F1 at threshold 0.5 vs a threshold chosen on the validation set (mean ± SD, 10 runs).</i>
 </td>
 </tr>
 </table>
@@ -175,11 +215,14 @@ Figures 4-8 are produced by `src/05_plots.py` (400 dpi PNG + vector PDF in `figu
 
 ##  Honest limitations
 
-- Perfect scores on the own corpus are partly **corpus artefacts** (`08_top_features.py`: *hi team*, *friday* for AI; *enron*, *2001* for human).
+- High scores on the own corpus are partly **corpus artefacts** (`08_top_features.py`: *hi team*, *friday* for AI; *enron*, *2001* for human; `11_artefact_checks.py`: greetings, [Your Name] placeholders and typographic characters appear almost only in AI emails).
+- The fixed split is grouped by subject: a human email and the AI email written for the same subject are always in the same split.
+- The threshold-calibration and artefact-cleaning analysis (step 12) was added after the main analysis and is exploratory.
 - The two generators are different families, but each contributes only ~150 emails.
 - Grouped splits overlap, so the SDs understate the true uncertainty.
-- Detectors do not transfer across domains (email ↔ HC3 Q&A).
+- Detectors do not transfer across domains (email ↔ HC3 Q&A); the HC3 length difference cannot be cleaned.
 - Emotion features come from the NRC EmoLex word list and add no detectable value here.
+- Models with stylometric features differ in the 3rd decimal across library versions; exact versions of the reported run are in `requirements_frozen.txt`.
 
 ---
 
@@ -194,7 +237,7 @@ Figures 4-8 are produced by `src/05_plots.py` (400 dpi PNG + vector PDF in `figu
 
 ##  Contributions 
 
-- Aleesha 
-- Munaza
+- Munaza Tariq (23i-2545): TO FILL
+- Aleesha Javed (23i-5055): TO FILL
 
-*AI tools were used only for grammar, LaTeX debugging and code debugging.*
+*AI-tool use is declared in the Acknowledgment of the paper.*
