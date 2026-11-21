@@ -1,6 +1,5 @@
 # Dependency file for the analysis (Assignment 3).
-# After your final successful run, replace these with exact versions:
-#   pip freeze > requirements_frozen.txt   (and keep both files)
+# Exact versions of the final run: requirements_frozen.txt
 numpy
 pandas
 scipy
@@ -14,3 +13,4 @@ transformers
 datasets
 jupyter
 nbformat
+nrclex

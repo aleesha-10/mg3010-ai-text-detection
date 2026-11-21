@@ -84,3 +84,21 @@ if tf is not None:
         d = tf[tf.direction == dirn].copy(); d["a"] = d.weight.abs(); d = d.sort_values("a").tail(15)
         ax.barh(d.feature, d.a, color=c); ax.set_title(ttl); ax.set_xlabel("|logistic-regression weight|")
     fig.tight_layout(); save(fig, "fig_top_features")
+
+# 7. Threshold calibration (exploratory, step 12): unseen-generator F1 at 0.5 vs validation-calibrated threshold
+cs = table("calibration_summary.csv")
+if cs is not None:
+    d = cs[(cs.experiment == "E3_repeated_unseen_generator") & (cs.corpus_version == "original")]
+    from matplotlib.patches import Patch
+    fig, ax = plt.subplots(figsize=(3.5, 3.1)); x = np.arange(2); w = .36
+    # model = colour (as in the other figures); threshold = light + hatched (0.5) vs solid (calibrated)
+    STY = [("default_0.5", "threshold 0.5", .45, "///"), ("val_calibrated", "validation-calibrated", 1.0, None)]
+    for k, (tt, lab, alpha, hatch) in enumerate(STY):
+        v = d[d.threshold_type == tt].set_index("model").reindex(["base", "extended"])
+        ax.bar(x + (k - .5) * w, v.f1_mean, w * .92, yerr=v.f1_sd, capsize=3, color=[COL["base"], COL["extended"]],
+               alpha=alpha, hatch=hatch, edgecolor=INK, linewidth=.6, error_kw={"lw": 1, "ecolor": INK})
+    ax.set_xticks(x, ["Base", "Extended"]); ax.set_ylim(0, 1.05)
+    ax.set_ylabel("F1, unseen generator (mean ± SD)")
+    handles = [Patch(facecolor="#BBBBBB", alpha=a, hatch=h, edgecolor=INK, linewidth=.6, label=lab) for _, lab, a, h in STY]
+    ax.legend(handles=handles, frameon=False, loc="upper center", bbox_to_anchor=(.5, -.12), fontsize=7.5, ncol=2)
+    fig.tight_layout(); save(fig, "fig_calibration")

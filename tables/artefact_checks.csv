@@ -1,0 +1,7 @@
+corpus,cue,human_share,ai_share,length_auc
+own,starts with greeting,0.101,0.878,
+own,name placeholder e.g. [Your Name],0.0,0.321,
+own,typographic quotes / special spaces,0.0,0.689,
+hc3,space before punctuation,1.0,0.0,
+own,length only (word count) ROC-AUC,,,0.523
+hc3,length only (word count) ROC-AUC,,,0.901
